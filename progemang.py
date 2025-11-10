@@ -1,10 +1,15 @@
 import pygame, sys
+'''
+ Tegemist on Programmeerimise projektiga ehk PyGame'iga tehtud mäng.
+ Autorid: Karel Kohu, Rickie Magnus Jojo Roberts
+ Inspiratsiooniallikad hetkeseisuga: https://www.youtube.com/watch?v=blLLtdv4tvo&t=1s
+ '''
 
 # --- Algseaded ---
 pygame.init()
 WIDTH, HEIGHT = 640,640
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Kaardivahetus mõlemas suunas")
+pygame.display.set_caption("Tartu vajab sind!")
 CLOCK = pygame.time.Clock()
 
 # --- Tegelane ---
