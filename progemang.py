@@ -9,7 +9,7 @@ screen = pygame.display.set_mode((640,640)) #EKRAAN
 
 batman = pygame.image.load("batman.png").convert_alpha() #Tegelane
 batman = pygame.transform.scale(batman,(64,64))
-player_rect = batman.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+player_rect = batman.get_rect(center=(800 // 2, 600 // 2))
 batman_speed = 300
 
 running = True
