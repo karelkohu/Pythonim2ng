@@ -22,6 +22,7 @@ while running:
 
     screen.fill((255,255,255))
     screen.blit(batman, (x,30))
+    dt = clock.tick(60) / 1000.0  # delta time sekundites
 
     x += 50 * delta_time
 
