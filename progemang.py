@@ -10,6 +10,7 @@ screen = pygame.display.set_mode((640,640)) #EKRAAN
 batman = pygame.image.load("batman.png").convert_alpha() #Tegelane
 batman = pygame.transform.scale(batman,(64,64))
 player_rect = batman.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+batman_speed = 300
 
 running = True
 x = 0
@@ -47,8 +48,8 @@ while running:
             dy *= inv
 
         # Uuenda asukohta
-        player_rect.x += dx * player_speed * dt
-        player_rect.y += dy * player_speed * dt
+        player_rect.x += dx * batman_speed * dt
+        player_rect.y += dy * batman_speed * dt
 
 
     pygame.display.flip()
