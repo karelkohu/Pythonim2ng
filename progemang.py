@@ -9,6 +9,7 @@ screen = pygame.display.set_mode((640,640)) #EKRAAN
 
 batman = pygame.image.load("batman.png").convert_alpha() #Tegelane
 batman = pygame.transform.scale(batman,(64,64))
+player_rect = batman.get_rect(center=(WIDTH // 2, HEIGHT // 2))
 
 running = True
 x = 0
@@ -26,6 +27,29 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    # Liikumine
+        keys = pygame.key.get_pressed()
+        dx = dy = 0
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            dx = -1
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            dx = 1
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            dy = -1
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            dy = 1
+
+        # Normaalseeri diagonaal
+        if dx != 0 and dy != 0:
+            inv = 0.70710678
+            dx *= inv
+            dy *= inv
+
+        # Uuenda asukohta
+        player_rect.x += dx * player_speed * dt
+        player_rect.y += dy * player_speed * dt
+
 
     pygame.display.flip()
 
