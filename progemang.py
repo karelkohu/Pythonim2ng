@@ -18,22 +18,36 @@ batman = pygame.transform.scale(batman, (64, 64))
 player_rect = batman.get_rect(bottomleft=(50, 600))
 player_speed = 300  # px sekundis
 
+alfred = pygame.image.load("alfredtaustata.png").convert_alpha()
+alfred = pygame.transform.scale(alfred,(64,64))
+alfred_rect = alfred.get_rect(topleft=(300, 350))
+#pygame.draw.rect(SCREEN, (0, 0, 255), alfred_rect)
+
 #---DELTA---
 delta = pygame.image.load("testDelta.jpeg").convert_alpha()
 delta = pygame.transform.scale(delta,(640,640))
 
+#---KLASSIRUUM---
+klassiruum = pygame.image.load("klassesialgne (1).jpg").convert_alpha()
+klassiruum = pygame.transform.scale(klassiruum,(640,640))
 
-font = pygame.font.Font(None, 36)  # None = vaikimisi font, 36 = suurus
+
+font = pygame.font.Font(None, 32)  # None = vaikimisi font, 36 = suurus
 
 
 
 # --- Kaardid ---
 maps = [
     (delta),   # kaart 0
-    pygame.Surface((640,640)),      # kaart 1
+    (klassiruum),      # kaart 1
     pygame.Surface((640,640)),     # kaart 2
 ]
 current_map = 0
+
+#--- DIALOOG ---
+dialog_active = False
+dialog_text = ""
+
 
 
 
@@ -49,6 +63,10 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+        
+        if event.type == pygame.KEYDOWN:
+            if dialog_active and (event.key == pygame.K_SPACE or event.key == pygame.K_RETURN):
+                dialog_active = False
 
 
     # --- Liikumine ---
@@ -98,15 +116,33 @@ while running:
         SCREEN.blit(text_surface, (50, 50))  # x=50, y=50
     
     if current_map == 1:
-        message = "Oled jõudnud Delta hoonesse\n edasi saad avastada Beeta versioonis :)"
+        SCREEN.blit(alfred, alfred_rect)
+        message = "Oled jõudnud Delta hoonesse\n Huvitav, mis Alfredil rääkida on..."
         text_surface = font.render(message, True, (255, 0, 0))  # punane tekst
         SCREEN.blit(text_surface, (50, 50))  # x=50, y=50
 
-    maps[1].fill((0, 180, 90))   # roheline / suvaline
+        if player_rect.colliderect(alfred_rect):
+            dialog_active = True
+            dialog_text = (
+                "Alfred: Mees, täna olevat Arvuti arhitektuuris\n mingi haige töö.\n"
+                "Kui oleks vaid keegi, kes murraks Physicumi sisse..."
+            )
+
+    #--- JOONISTAMINE ---
+    if dialog_active:
+        dialog_rect = pygame.Rect(20, HEIGHT - 160, WIDTH - 40, 140)
+        pygame.draw.rect(SCREEN, (0, 0, 0), dialog_rect)
+        pygame.draw.rect(SCREEN, (255, 255, 255), dialog_rect, 3)
+
+        for i, line in enumerate(dialog_text.split("\n")):
+            text_surface = font.render(line, True, (255, 255, 255))
+            SCREEN.blit(text_surface, (dialog_rect.x + 20, dialog_rect.y + 20 + i * 30))
+
     maps[2].fill((180, 60, 60))
     SCREEN.blit(batman, player_rect)
     pygame.display.flip()
 
+        
 # --- Väljumine ---
 pygame.quit()
 sys.exit()
