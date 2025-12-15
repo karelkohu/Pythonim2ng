@@ -26,14 +26,16 @@ alfred_rect = alfred.get_rect(topleft=(300, 350))
 #---DELTA---
 delta = pygame.image.load("testDelta.jpeg").convert_alpha()
 delta = pygame.transform.scale(delta,(640,640))
+delta_rect2 = pygame.Rect(320, 200, 50, 50)
 
 #---KLASSIRUUM---
 klassiruum = pygame.image.load("klassesialgne (1).jpg").convert_alpha()
 klassiruum = pygame.transform.scale(klassiruum,(640,640))
 
 #---PHYSICUM---
-physicum = pygame.image.load("physicum.jpg").convert_alpha()
+physicum = pygame.image.load("physicum (1).jpg").convert_alpha()
 physicum = pygame.transform.scale(physicum,(640,640))
+physicum_rect = pygame.Rect(175, 380, 50, 50)
 
 font = pygame.font.Font(None, 32)  # None = vaikimisi font, 36 = suurus
 
@@ -105,7 +107,7 @@ while running:
     # Kui oleme kaardil 0, kontrollime kindlaid koordinaate
     if current_map == 0:
         # Kaardivahetus paremale kindla koordinaadi juures
-        if player_rect.x >= 300:  # näiteks paremale minnes x >= 300
+        if player_rect.colliderect(delta_rect2):  
             current_map = 1
             player_rect.x = 50  # uus positsioon kaardil 1
 
@@ -179,8 +181,12 @@ while running:
             text_surface = font.render(line, True, (255, 255, 255))
             SCREEN.blit(text_surface, (dialog_rect.x + 20, dialog_rect.y + 20 + i * 30))
 
+    #print(player_rect.x, player_rect.y)
+    pygame.draw.rect(SCREEN, (255, 0, 0), physicum_rect, 2)  # punane ääristus
+
     SCREEN.blit(batman, player_rect)
     pygame.display.flip()
+
 
         
 # --- Väljumine ---
