@@ -22,6 +22,10 @@ player_speed = 300  # px sekundis
 delta = pygame.image.load("testDelta.jpeg").convert_alpha()
 delta = pygame.transform.scale(delta,(640,640))
 
+#---PHYSICUM---
+physicum = pygame.image.load("physicum.png").convert_alpha()
+physicum = pygame.transform.scale(physicum,(640,640))
+
 
 font = pygame.font.Font(None, 36)  # None = vaikimisi font, 36 = suurus
 
@@ -32,6 +36,7 @@ maps = [
     (delta),   # kaart 0
     pygame.Surface((640,640)),      # kaart 1
     pygame.Surface((640,640)),     # kaart 2
+    (physicum),  # Physicum
 ]
 current_map = 0
 
