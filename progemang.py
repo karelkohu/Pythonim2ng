@@ -15,13 +15,16 @@ CLOCK = pygame.time.Clock()
 # --- Tegelane ---
 batman = pygame.image.load("batman.png").convert_alpha()
 batman = pygame.transform.scale(batman, (64, 64))
-player_rect = batman.get_rect(bottomleft=(50, 600))
+player_rect = batman.get_rect(bottomleft=(125, 450))
 player_speed = 300  # px sekundis
 
 alfred = pygame.image.load("alfredtaustata.png").convert_alpha()
 alfred = pygame.transform.scale(alfred,(64,64))
 alfred_rect = alfred.get_rect(topleft=(300, 350))
-#pygame.draw.rect(SCREEN, (0, 0, 255), alfred_rect)
+
+kassnaine = pygame.image.load("kassnainetaustata.png").convert_alpha()
+kassnaine = pygame.transform.scale(kassnaine,(64,64))
+kassnaine_rect = pygame.Rect(290,280,50,50)
 
 #---DELTA---
 delta = pygame.image.load("testDelta.jpeg").convert_alpha()
@@ -30,6 +33,10 @@ delta = pygame.transform.scale(delta,(640,640))
 #---KLASSIRUUM---
 klassiruum = pygame.image.load("klassesialgne (1).jpg").convert_alpha()
 klassiruum = pygame.transform.scale(klassiruum,(640,640))
+
+#---KLASSIRUUM2---
+klassiruum2 = pygame.image.load("klassesialgne (1).jpg").convert_alpha()
+klassiruum2 = pygame.transform.scale(klassiruum,(640,640))
 
 #---PHYSICUM---
 physicum = pygame.image.load("physicum.jpg").convert_alpha()
@@ -52,7 +59,8 @@ maps = [
     (delta),   # map 0
     (klassiruum),      # map 1
     (physicum), # map 2
-    (physicum2) # map 3   
+    (physicum2), # map 3
+    (klassiruum2) # map 4
 ]
 current_map = 0
 
@@ -81,6 +89,9 @@ map_dialogs = {
     ],
     3: [
         {"speaker": "Batman", "text": "Nii, olen Physicumis, äkki peaks admini lauas\nveidi mesijuttu rääkima"}
+    ],
+    4: [
+        {"speaker": "Narrator", "text": "Oled tagasi Deltas, näita Alfredile\noma töö vilja."}
     ]
 }
 
@@ -95,7 +106,7 @@ alfred_dialog_done = False
 
 batman_dialog = [
     {"speaker": "Batman", "text":"Batman: Selge, lähen hilisõhtul bussiga Physicumi..."},
-    {"speaker": "Batman", "text":"Ma ei maga, Delta vajab mind.\n Aeg liikuda!"}
+    {"speaker": "Batman", "text":"Ma ei maga, Delta vajab mind.\nAeg liikuda!"}
 ]
 
 batman_dialog_done = False
@@ -105,18 +116,25 @@ admin_dialog = [
     {"speaker": "Batman", "text": "Tere, olen Tartu Ülikooli õppejõud ja unustasin\nenda konto parooli, kus mul on kõik\ntestide vastused, palun öelge, mis see oli"},
     {"speaker": "Narrator", "text": "Admin: Huvitav kostüüm õppejõu jaoks, aga okei,\nteie parool on \"NaisedKaovadTehnikaJääb\""},
     {"speaker": "Batman", "text": "Batman: Suur aitäh teile!"},
-    {"speaker": "Narrator", "text": "Logisid arvutisse sisse, kuid tuli ette turvaküsimus...\nMis on operatsioonisüsteemide õppejõu\n vähim lemmik OS?"},
-    {"speaker": "Narrator", "text": "Kui arvad, et Windows, vajuta W,\nLinux, vajuta L\nvõi Mac, vajuta M"}
+    {"speaker": "Narrator", "text": "Logisid arvutisse sisse, kuid tuli ette turvaküsimus...\nMis on operatsioonisüsteemide õppejõu\nvähim lemmik OS?"},
+    {"speaker": "Narrator", "text": "Peale vastuse valimist vajuta Enter."},
+    {"speaker": "Narrator", "text": "Alustamiseks vajuta Enter.\nKui arvad, et Windows, vajuta W,\nLinux, vajuta L\nvõi Mac, vajuta M"}
 ]
 
 admin_dialog_done = False
 
 vastused_dialog = [
-    {"speaker": "Narrator", "text": "Õige vastus!"},
+    {"speaker": "Narrator", "text": "Mac on õige vastus!"},
     {"speaker": "Batman", "text": "Väga hea, vastused on käes,\nNüüd viin need Deltasse ja olen kangelane!"}
 ]
 vastused_dialog_done = False
 
+alfred_dialog2 = [
+    {"speaker": "Alfred", "text": "Alfred: Ma ei usu oma silmi!\n Sa oled päästnud terve kursuse!."},
+    {"speaker": "Alfred", "text": "Peatse kohtumiseni!"}
+]
+
+alfred_dialog2_done = False
 #--- Funktsioon, mis väljastab map-i alguses ekraanile teksti, mida pead tegema jnejne ---
 
 current_text = ""  # praegune tekst, mis kuvatakse ekraanil
@@ -125,7 +143,7 @@ text_speed = 0.05  # aeg ühe tähe näitamiseks sekundites
 last_update = 0    # viimane kord, kui täht lisati
 
 def start_dialog(lines):
-    global dialog_active, dialog_lines, dialog_index
+    global dialog_active, dialog_lines, dialog_index, current_text, text_index, last_update
     dialog_active = True
     dialog_lines = lines
     dialog_index = 0
@@ -235,14 +253,16 @@ while running:
             current_map += 1
             player_rect.topleft = (50,50)
             start_dialog(map_dialogs[current_map])  # spawn point uuel kaardil ja dialoogi algus
-    
 
-
-    # --- Piirid üleval ja all ---
+        # --- Piirid üleval,all,paremal,vasakul ---
     if player_rect.top < 0:
         player_rect.top = 0
     if player_rect.bottom > HEIGHT:
         player_rect.bottom = HEIGHT
+    if player_rect.left < 0:
+        player_rect.left = 0
+    if player_rect.right > WIDTH:
+        player_rect.right = WIDTH
 
     # --- Joonista ---
     
@@ -266,8 +286,11 @@ while running:
     if current_map == 2:
         if player_rect.colliderect(physicum_rect):
             current_map += 1
-            player_rect.topleft = (250,500)
+            player_rect.topleft = (140,350)
             start_dialog(map_dialogs[current_map])
+
+    if current_map == 3:
+        SCREEN.blit(kassnaine,kassnaine_rect)
 
     if current_map == 3 and player_rect.colliderect(admin_rect):
         if not admin_dialog_done and not dialog_active:
@@ -279,8 +302,17 @@ while running:
 
 
         if not dialog_active and admin_dialog_done and vastused_dialog_done:
-            current_map = 1
+            current_map = 4
             player_rect.topleft = (50, 50)
+            start_dialog(map_dialogs[current_map])
+
+    if current_map == 4:
+        SCREEN.blit(alfred, alfred_rect)
+        
+    if current_map == 4 and player_rect.colliderect(alfred_rect):
+        if not alfred_dialog2_done:
+            start_dialog(alfred_dialog2)
+            alfred_dialog2_done = True
 
     #--- JOONISTAMINE ---
     if dialog_active:
@@ -321,7 +353,7 @@ while running:
     # --- Vastuste valimine ---
 
     if waiting_for_answer and vastused_feedback:
-        feedback_surface = font.render(vastused_feedback, True, (0,255,0))
+        feedback_surface = font.render(vastused_feedback, True, (255,0,0))
         SCREEN.blit(feedback_surface, (20, HEIGHT - 200))
 
 
