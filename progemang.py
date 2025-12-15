@@ -1,25 +1,58 @@
 import pygame, sys
+'''
+ Tegemist on Programmeerimise projektiga ehk PyGame'iga tehtud mäng.
+ Autorid: Karel Kohu, Rickie Magnus Jojo Roberts
+ Inspiratsiooniallikad hetkeseisuga: https://www.youtube.com/watch?v=blLLtdv4tvo&t=1s
+ '''
 
 # --- Algseaded ---
 pygame.init()
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 640,640
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Kaardivahetus mõlemas suunas")
+pygame.display.set_caption("Tartu vajab sind!")
 CLOCK = pygame.time.Clock()
 
 # --- Tegelane ---
-player_image = pygame.image.load("batman.png").convert_alpha()
-player_image = pygame.transform.scale(player_image, (80, 80))
-player_rect = player_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+batman = pygame.image.load("batman.png").convert_alpha()
+batman = pygame.transform.scale(batman, (64, 64))
+player_rect = batman.get_rect(bottomleft=(50, 600))
 player_speed = 300  # px sekundis
+
+alfred = pygame.image.load("alfredtaustata.png").convert_alpha()
+alfred = pygame.transform.scale(alfred,(64,64))
+alfred_rect = alfred.get_rect(topleft=(300, 350))
+#pygame.draw.rect(SCREEN, (0, 0, 255), alfred_rect)
+
+#---DELTA---
+delta = pygame.image.load("testDelta.jpeg").convert_alpha()
+delta = pygame.transform.scale(delta,(640,640))
+
+#---KLASSIRUUM---
+klassiruum = pygame.image.load("klassesialgne (1).jpg").convert_alpha()
+klassiruum = pygame.transform.scale(klassiruum,(640,640))
+
+#---PHYSICUM---
+physicum = pygame.image.load("physicum.jpg").convert_alpha()
+physicum = pygame.transform.scale(physicum,(640,640))
+
+font = pygame.font.Font(None, 32)  # None = vaikimisi font, 36 = suurus
+
+
 
 # --- Kaardid ---
 maps = [
-    (100, 150, 250),   # kaart 0
-    (0, 180, 90),      # kaart 1
-    (180, 60, 60),     # kaart 2
+    (delta),   # kaart 0
+    (klassiruum),      # kaart 1
+    (physicum), # Physicum
 ]
 current_map = 0
+
+#--- DIALOOG ---
+dialog_active = False
+dialog_text = ""
+
+
+
 
 # --- Põhiloop ---
 running = True
@@ -33,6 +66,11 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+        
+        if event.type == pygame.KEYDOWN:
+            if dialog_active and (event.key == pygame.K_SPACE or event.key == pygame.K_RETURN):
+                dialog_active = False
+
 
     # --- Liikumine ---
     keys = pygame.key.get_pressed()
@@ -55,20 +93,53 @@ while running:
     player_rect.x += dx * player_speed * dt
     player_rect.y += dy * player_speed * dt
 
-    # --- Kaardivahetus paremale ja vasakule ---
-    if player_rect.right > WIDTH:  # paremale serv
-        if current_map < len(maps) - 1:
-            current_map += 1
-            player_rect.left = 0
-        else:
-            player_rect.right = WIDTH  # viimase kaardi serv
 
-    if player_rect.left < 0:  # vasakule serv
-        if current_map > 0:
-            current_map -= 1
-            player_rect.right = WIDTH
-        else:
-            player_rect.left = 0  # esimese kaardi vasak serv
+        # --- Kaardivahetus koolimajaga ---
+    # --- KAARDIVAHTUS PAREMALT ---
+    
+
+    # --- KAARDIVAHTUS PAREMALT ---
+    
+    # --- KAARDIVAHTUS ---
+
+    # Kui oleme kaardil 0, kontrollime kindlaid koordinaate
+    if current_map == 0:
+        # Kaardivahetus paremale kindla koordinaadi juures
+        if player_rect.x >= 300:  # näiteks paremale minnes x >= 300
+            current_map = 1
+            player_rect.x = 50  # uus positsioon kaardil 1
+
+        elif player_rect.x <= 0:  # näiteks vasakule minnes x <= 100
+            current_map = 2
+            player_rect.x = 550  # uus positsioon kaardil 2
+
+
+    # Kui oleme kaardil 1 või 2, kontrollime tavapärast servade loogikat
+    else:
+        # Paremale serva liikumine
+        if player_rect.right >= WIDTH:
+            if current_map == 1:
+                player_rect.right = WIDTH  # jää seina vastu
+            elif current_map == 2:
+                current_map = 0
+                player_rect.left = 50  # positsioon kaardil 0
+
+        # Vasakule serva liikumine
+        elif player_rect.left <= 0:
+            if current_map == 2:
+                player_rect.left = 0  # jää seina vastu
+            elif current_map == 1:
+                current_map = 0
+                player_rect.right = 300  # positsioon kaardil 0
+            elif current_map == 0:
+                current_map == 2
+                player_rect.right = 50
+
+
+
+
+    
+
 
     # --- Piirid üleval ja all ---
     if player_rect.top < 0:
@@ -77,10 +148,48 @@ while running:
         player_rect.bottom = HEIGHT
 
     # --- Joonista ---
-    SCREEN.fill(maps[current_map])
-    SCREEN.blit(player_image, player_rect)
+    
+    SCREEN.blit(maps[current_map], (0,0))
+
+    if current_map == 0:
+        message = "Tartu vajab sind! Liigu Delta hoonesse."
+        text_surface = font.render(message, True, (255, 0, 0))  # punane tekst
+        SCREEN.blit(text_surface, (50, 50))  # x=50, y=50
+    
+    if current_map == 1:
+        SCREEN.blit(alfred, alfred_rect)
+        message = "Oled jõudnud Delta hoonesse\n Huvitav, mis Alfredil rääkida on..."
+        text_surface = font.render(message, True, (255, 0, 0))  # punane tekst
+        SCREEN.blit(text_surface, (50, 50))  # x=50, y=50
+
+        if player_rect.colliderect(alfred_rect):
+            dialog_active = True
+            dialog_text = (
+                "Alfred: Mees, täna olevat Arvuti arhitektuuris\n mingi haige töö.\n"
+                "Kui oleks vaid keegi, kes murraks Physicumi sisse..."
+            )
+
+    #--- JOONISTAMINE ---
+    if dialog_active:
+        dialog_rect = pygame.Rect(20, HEIGHT - 160, WIDTH - 40, 140)
+        pygame.draw.rect(SCREEN, (0, 0, 0), dialog_rect)
+        pygame.draw.rect(SCREEN, (255, 255, 255), dialog_rect, 3)
+
+        for i, line in enumerate(dialog_text.split("\n")):
+            text_surface = font.render(line, True, (255, 255, 255))
+            SCREEN.blit(text_surface, (dialog_rect.x + 20, dialog_rect.y + 20 + i * 30))
+
+    SCREEN.blit(batman, player_rect)
     pygame.display.flip()
 
+        
 # --- Väljumine ---
 pygame.quit()
 sys.exit()
+
+# Level 2 - Leiad tegelase, kes ütleb nt "ou arvuti arhitektuuris on mingi haige töö täna"
+# "Meil on vaja murda sisse Physicumi ja saada töö vastused, sest meie ega ChatGPT ei saa teha seda"
+# Uus map - Liigu Physicumi!
+# Jõuad Physicumi, siis pead leidma vastused (collectable item)
+# Kui see item on olemas, siis on level läbi ja pead liikuma tagasi Deltasse, kus ootab see sama kunde
+# Siis ta on mingi "jouu tänx mees nüüd saame selle töö lebo A"
