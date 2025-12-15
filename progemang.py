@@ -112,6 +112,7 @@ admin_dialog = [
 admin_dialog_done = False
 
 vastused_dialog = [
+    {"speaker": "Narrator", "text": "Õige vastus!"},
     {"speaker": "Batman", "text": "Väga hea, vastused on käes,\nNüüd viin need Deltasse ja olen kangelane!"}
 ]
 vastused_dialog_done = False
@@ -136,6 +137,7 @@ start_dialog(map_dialogs[0])
 
 #---ITEMS---
 vastused = False
+waiting_for_answer = False
 vastused_feedback = ""
 
 
@@ -149,13 +151,34 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
 
-            if dialog_active and (event.key == pygame.K_SPACE or event.key == pygame.K_RETURN):
+        # KÕIGEPEALT: vastuse ootamine
+        if waiting_for_answer and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_m:
+                vastused = True
+                waiting_for_answer = False
+                vastused_feedback = ""
+                
+                dialog_active = False
+                dialog_lines = []
+                dialog_index = 0
+                
+                start_dialog(vastused_dialog)
+                vastused_dialog_done = True
 
+            elif event.key == pygame.K_w:
+                vastused_feedback = "Windows on vale vastus! Proovi uuesti."
+            elif event.key == pygame.K_l:
+                vastused_feedback = "Linux on vale vastus! Proovi uuesti."
+
+            continue  # blokeerib Enteri / Space'i täielikult
+
+        # TAVALINE DIALOOG
+        if event.type == pygame.KEYDOWN:
+            if dialog_active and event.key in (pygame.K_SPACE, pygame.K_RETURN):
                 entry = dialog_lines[dialog_index]
                 if text_index < len(entry["text"]):
-                    current_text = entry["text"]  # skipi typewriteri animatsioon
+                    current_text = entry["text"]
                     text_index = len(entry["text"])
                 else:
                     dialog_index += 1
@@ -163,22 +186,22 @@ while running:
                     text_index = 0
                     last_update = 0
                     if dialog_index >= len(dialog_lines):
-                        dialog_active = False
-                        dialog_index = 0
-                        dialog_lines = []
 
-            if current_map == 3 and dialog_active and admin_dialog_done:
-                if event.key == pygame.K_m:  # õige vastus
-                    vastused = True
-                    vastused_feedback = "Õige vastus! Vastused käes."
-                    dialog_active = False
-                    dialog_index = 0
-                    dialog_lines = []
-                elif event.key in [pygame.K_w, pygame.K_l]:  # vale vastus
-                    vastused_feedback = "Vale vastus! Proovi uuesti."
+                    # kui see on admini küsimus, jääb dialoogi
+                        if dialog_lines == admin_dialog:
+                            waiting_for_answer = True
+                            dialog_index -= 1  # jää viimase rea peale
+                            text_index = len(dialog_lines[dialog_index]["text"])
+                        else:
+                            dialog_active = False
+                            dialog_index = 0
+                            dialog_lines = []
 
-            if event.key == pygame.K_ESCAPE:
+
+            elif event.key == pygame.K_ESCAPE:
                 running = False
+
+
 
 
     # --- Liikumine ---
@@ -246,18 +269,18 @@ while running:
             player_rect.topleft = (250,500)
             start_dialog(map_dialogs[current_map])
 
-    if current_map == 3:
-        if current_map == 3 and player_rect.colliderect(admin_rect) and not admin_dialog_done:
+    if current_map == 3 and player_rect.colliderect(admin_rect):
+        if not admin_dialog_done and not dialog_active:
             start_dialog(admin_dialog)
             admin_dialog_done = True
-        
+        elif admin_dialog_done and not dialog_active and not waiting_for_answer:
+            waiting_for_answer = True
 
-        if not dialog_active and admin_dialog_done:
-            start_dialog(vastused_dialog)
-            vastused_dialog_done = True
+
 
         if not dialog_active and admin_dialog_done and vastused_dialog_done:
-            current_map == 1
+            current_map = 1
+            player_rect.topleft = (50, 50)
 
     #--- JOONISTAMINE ---
     if dialog_active:
@@ -296,7 +319,8 @@ while running:
         SCREEN.blit(batman, player_rect)
 
     # --- Vastuste valimine ---
-    if current_map == 3 and vastused_feedback:
+
+    if waiting_for_answer and vastused_feedback:
         feedback_surface = font.render(vastused_feedback, True, (0,255,0))
         SCREEN.blit(feedback_surface, (20, HEIGHT - 200))
 
