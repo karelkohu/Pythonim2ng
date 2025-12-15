@@ -110,3 +110,10 @@ while running:
 # --- Väljumine ---
 pygame.quit()
 sys.exit()
+
+# Level 2 - Leiad tegelase, kes ütleb nt "ou arvuti arhitektuuris on mingi haige töö täna"
+# "Meil on vaja murda sisse Physicumi ja saada töö vastused, sest meie ega ChatGPT ei saa teha seda"
+# Uus map - Liigu Physicumi!
+# Jõuad Physicumi, siis pead leidma vastused (collectable item)
+# Kui see item on olemas, siis on level läbi ja pead liikuma tagasi Deltasse, kus ootab see sama kunde
+# Siis ta on mingi "jouu tänx mees nüüd saame selle töö lebo A"
