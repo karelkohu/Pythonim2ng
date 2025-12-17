@@ -50,6 +50,9 @@ physicum2 = pygame.transform.scale(physicum2,(640,640))
 #---ADMINLAUD---
 admin_rect = pygame.Rect(300,300,50,50)
 
+#---VIIES MAP---
+viies = pygame.Surface((WIDTH, HEIGHT))
+viies.fill((0,0,0))
 font = pygame.font.Font(None, 32)  # None = vaikimisi font, 36 = suurus
 
 
@@ -60,7 +63,8 @@ maps = [
     (klassiruum),      # map 1
     (physicum), # map 2
     (physicum2), # map 3
-    (klassiruum2) # map 4
+    (klassiruum2), # map 4
+    (viies) # map 5
 ]
 current_map = 0
 
@@ -92,6 +96,10 @@ map_dialogs = {
     ],
     4: [
         {"speaker": "Narrator", "text": "Oled tagasi Deltas, näita Alfredile\noma töö vilja."}
+    ],
+    5: [
+        {"speaker": "Narrator", "text": "Päästsid terve kursuse eksmatrikuleerimisest!"},
+        {"speaker": "Narrator", "text": "Aitäh mängimast!"}
     ]
 }
 
@@ -313,6 +321,9 @@ while running:
         if not alfred_dialog2_done:
             start_dialog(alfred_dialog2)
             alfred_dialog2_done = True
+        if alfred_dialog2_done and not dialog_active:
+            current_map += 1
+            start_dialog(map_dialogs[current_map])
 
     #--- JOONISTAMINE ---
     if dialog_active:
