@@ -2,10 +2,11 @@ import pygame, sys
 '''
  Tegemist on Programmeerimise projektiga ehk PyGame'iga tehtud mäng.
  Autorid: Karel Kohu, Rickie Magnus Jojo Roberts
- Inspiratsiooniallikad hetkeseisuga: https://www.youtube.com/watch?v=blLLtdv4tvo&t=1s
+ Inspiratsiooniallikad: https://www.youtube.com/watch?v=blLLtdv4tvo&t=1s
+ https://mrgallo.github.io/fundamentals/pygame/pygame-cheatsheet.html
  '''
 
-# --- Algseaded ---
+# --- Algseaded (ekraani suurus, mängu pealkiri, tegelase kiirus, suurus jne)---
 pygame.init()
 WIDTH, HEIGHT = 640,640
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -171,7 +172,7 @@ vastused_feedback = ""
 # --- Põhiloop ---
 running = True
 while running:
-    dt = CLOCK.tick(60) / 1000
+    dt = CLOCK.tick(60) / 1000 # Kaadrisagedus 60Hz
 
     # --- Sündmuste kontroll ---
     for event in pygame.event.get():
@@ -324,7 +325,7 @@ while running:
             current_map += 1
             start_dialog(map_dialogs[current_map])
 
-    #--- JOONISTAMINE ---
+    #--- JOONISTAMINE ja 'typewriter' efekt ---
     if dialog_active:
 
         dialog_rect = pygame.Rect(20, HEIGHT - 160, WIDTH - 40, 140)
@@ -352,7 +353,7 @@ while running:
         text_surface = font.render(current_text, True, color)
         SCREEN.blit(text_surface, (dialog_rect.x + 20, dialog_rect.y + 20))
 
-    if current_map == 2:
+    if current_map == 2: # Kolmandal map'il peab Batman veidi väiksem olema
         batman_scaled = pygame.transform.scale(batman, (32, 32))
         SCREEN.blit(batman_scaled,player_rect)
 
@@ -373,10 +374,3 @@ while running:
 # --- Väljumine ---
 pygame.quit()
 sys.exit()
-
-# Level 2 - Leiad tegelase, kes ütleb nt "ou arvuti arhitektuuris on mingi haige töö täna"
-# "Meil on vaja murda sisse Physicumi ja saada töö vastused, sest meie ega ChatGPT ei saa teha seda"
-# Uus map - Liigu Physicumi!
-# Jõuad Physicumi, siis pead leidma vastused (collectable item)
-# Kui see item on olemas, siis on level läbi ja pead liikuma tagasi Deltasse, kus ootab see sama kunde
-# Siis ta on mingi "jouu tänx mees nüüd saame selle töö lebo A"
